@@ -1,0 +1,5 @@
+﻿In test methods name:
+
+s - smaller than
+e - equals
+g - greater than

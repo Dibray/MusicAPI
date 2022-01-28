@@ -4,11 +4,11 @@
     {
         private string hash = null;
 
-        private string Hash
+        public string Hash
         {
             get { return hash; }
 
-            set
+            private set
             {
                 if (IsValidPassword(value))
                     this.hash = Encrypt(value);
@@ -22,7 +22,12 @@
             }
         }
 
-        Password(in string password)
+        public Password(in string password)
+        {
+            Hash = password;
+        }
+
+        public void ChangePassword(in string password)
         {
             Hash = password;
         }
@@ -37,7 +42,19 @@
 
         private static string Encrypt(in string pass)
         {
-            return System.Security.Cryptography.SHA256.Create(pass).ToString();
+            byte[] p = new byte[pass.Length];
+
+            for (int i = 0; i < pass.Length; ++i) // Convert password to array of bytes
+                p[i] = (byte)pass[i];
+
+            byte[] h = System.Security.Cryptography.SHA256.Create().ComputeHash(p);
+
+            string hash = "";
+
+            for (int i = 0; i < h.Length; ++i) // Convert hash to string
+                hash += (char)h[i];
+
+            return hash;
         }
     }
 }
