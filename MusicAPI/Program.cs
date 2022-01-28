@@ -1,4 +1,4 @@
-namespace MusicAPI
+namespace Music.API
 {
     using Microsoft.AspNetCore.Hosting;
     using Microsoft.Extensions.Hosting;

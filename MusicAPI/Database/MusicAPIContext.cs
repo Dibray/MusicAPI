@@ -1,4 +1,4 @@
-﻿namespace MusicAPI.Database
+﻿namespace Music.Database
 {
     using Microsoft.EntityFrameworkCore;
 

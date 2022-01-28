@@ -1,4 +1,4 @@
-namespace MusicAPI
+namespace Music.API
 {
     using Microsoft.AspNetCore.Builder;
     using Microsoft.AspNetCore.Hosting;
@@ -8,7 +8,7 @@ namespace MusicAPI
     using Microsoft.OpenApi.Models;
     using Microsoft.EntityFrameworkCore;
 
-    using MusicAPI.Database;
+    using Music.Database;
 
     public class Startup
     {
