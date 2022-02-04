@@ -8,6 +8,7 @@
         {
             private readonly value_t value = null;
 
+            /// <exception cref="System.ArgumentException"></exception>
             public value_t Value
             {
                 get { return value; }

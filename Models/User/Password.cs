@@ -9,6 +9,7 @@
             private long Id { get; set; }
             private hash_t hash = null;
 
+            /// <exception cref="System.ArgumentException"></exception>
             public hash_t Hash
             {
                 get { return hash; }

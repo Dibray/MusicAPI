@@ -21,7 +21,8 @@ namespace Music.API
 
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddDbContext<MusicContext>(options => options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
+            services.AddDbContext<MusicContext>(options =>
+                options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
 
             services.AddControllers();
 
