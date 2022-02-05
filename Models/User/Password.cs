@@ -7,8 +7,8 @@
         internal class Db
         {
             private long Id { get; set; }
-            private hash_t hash = null;
 
+            private hash_t hash = null;
             /// <exception cref="System.ArgumentException"></exception>
             public hash_t Hash
             {
@@ -28,12 +28,12 @@
                 }
             }
 
-            private Db()
-            {
-                throw new System.InvalidOperationException("Password()_ctor");
-            }
+            public long UserId { get; private set; }
+            public User.Db User { get; private set; }
 
-            internal Db(hash_t password)
+            private Db() { }
+
+            internal Db(in hash_t password)
             {
                 Hash = password;
             }
@@ -64,23 +64,18 @@
             }
         }
 
-        private Db DB;
-
-        internal Db db
-        {
-            get { return DB; }
-        }
+        internal Db db { get; }
 
         public hash_t Hash
         { 
-            get { return DB.Hash; }
+            get { return db.Hash; }
 
-            set { this.DB.Hash = value; }
+            set { this.db.Hash = value; }
         }
 
         public Password(in hash_t password)
         {
-            DB = new Db(password);
+            db = new Db(password);
         }
 
         public void ChangePassword(in hash_t password)

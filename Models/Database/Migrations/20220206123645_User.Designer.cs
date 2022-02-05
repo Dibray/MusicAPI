@@ -10,8 +10,8 @@ using Music.Database;
 namespace Music.Models.Migrations
 {
     [DbContext(typeof(MusicContext))]
-    [Migration("20220203182900_Role")]
-    partial class Role
+    [Migration("20220206123645_User")]
+    partial class User
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -26,7 +26,13 @@ namespace Music.Models.Migrations
                     b.Property<string>("Value")
                         .HasColumnType("nvarchar(450)");
 
+                    b.Property<long>("UserId")
+                        .HasColumnType("bigint");
+
                     b.HasKey("Value");
+
+                    b.HasIndex("UserId")
+                        .IsUnique();
 
                     b.ToTable("Logins");
                 });
@@ -41,7 +47,13 @@ namespace Music.Models.Migrations
                     b.Property<string>("Hash")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<long>("UserId")
+                        .HasColumnType("bigint");
+
                     b.HasKey("Id");
+
+                    b.HasIndex("UserId")
+                        .IsUnique();
 
                     b.ToTable("Passwords");
                 });
@@ -53,40 +65,47 @@ namespace Music.Models.Migrations
                         .HasColumnType("bigint")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
+                    b.Property<string>("AuthToken")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<int?>("BirthYear")
                         .HasColumnType("int");
 
-                    b.Property<string>("LoginValue")
-                        .HasColumnType("nvarchar(450)");
-
                     b.Property<string>("Nickname")
                         .HasColumnType("nvarchar(max)");
-
-                    b.Property<long?>("PasswordId")
-                        .HasColumnType("bigint");
 
                     b.Property<byte>("Role")
                         .HasColumnType("tinyint");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("LoginValue");
-
-                    b.HasIndex("PasswordId");
-
                     b.ToTable("Users");
+                });
+
+            modelBuilder.Entity("Music.Models.Login+Db", b =>
+                {
+                    b.HasOne("Music.Models.User+Db", "User")
+                        .WithOne("Login")
+                        .HasForeignKey("Music.Models.Login+Db", "UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("Music.Models.Password+Db", b =>
+                {
+                    b.HasOne("Music.Models.User+Db", "User")
+                        .WithOne("Password")
+                        .HasForeignKey("Music.Models.Password+Db", "UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("Music.Models.User+Db", b =>
                 {
-                    b.HasOne("Music.Models.Login+Db", "Login")
-                        .WithMany()
-                        .HasForeignKey("LoginValue");
-
-                    b.HasOne("Music.Models.Password+Db", "Password")
-                        .WithMany()
-                        .HasForeignKey("PasswordId");
-
                     b.Navigation("Login");
 
                     b.Navigation("Password");

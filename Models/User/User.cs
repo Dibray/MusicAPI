@@ -4,9 +4,11 @@
 
     using System.Threading.Tasks;
     using System.Linq;
+    using Microsoft.EntityFrameworkCore;
 
     using nickname_t = System.String;
     using birthYear_t = System.Nullable<int>;
+    using authToken_t = System.String;
 
     public class User
     {
@@ -15,26 +17,18 @@
             /* This class describes only database objects and must be handled only from outer class */
 
             private long Id { get; set; } // User Id
-            private readonly Login.Db login;
-            private Password.Db password;
-            private nickname_t nickname = "User";
-            private birthYear_t birthYear = null;
+
+            public Login.Db Login { get; private init; }
+
+            public Password.Db Password { get; internal set; }
+
+            public authToken_t AuthToken { get; internal set; } = null;
+
             public Role Role { get; private set; } = Role.User;
 
-            public Login.Db Login
-            {
-                get { return login; }
+            public birthYear_t BirthYear { get; internal set; } = null;
 
-                private init { this.login = value; }
-            }
-
-            public Password.Db Password
-            {
-                get { return password; }
-
-                internal set { this.password = value; }
-            }
-
+            private nickname_t nickname = "User";
             public nickname_t Nickname
             {
                 get { return nickname; }
@@ -46,43 +40,20 @@
                 }
             }
 
-            public birthYear_t BirthYear
-            {
-                get { return birthYear; }
+            private Db() { }
 
-                internal set { this.birthYear = value; }
-            }
-
-            private Db()
-            {
-                // throw new System.InvalidOperationException("User.Db()_ctor");
-            }
-
-            internal Db(Login.Db loginDb, Password.Db passwordDb)
+            internal Db(in Login.Db loginDb, in Password.Db passwordDb)
             {
                 Login = loginDb;
                 Password = passwordDb;
             }
         }
 
-        private Db DB;
+        private Db db { get; }
 
-        private Db db
-        {
-            get { return DB; }
-        }
-
-        private readonly Login login;
-
-        private Login Login
-        {
-            get { return login; }
-
-            init { this.login = value; }
-        }
+        private Login Login { get; init; }
 
         private Password password;
-
         private Password Password
         {
             set { this.password = value; }
@@ -90,41 +61,59 @@
 
         private nickname_t Nickname
         {
-            set { this.DB.Nickname = value; }
+            set { this.db.Nickname = value; }
         }
     
         private birthYear_t BirthYear
         {
-            set { this.DB.BirthYear = value; }
+            set { this.db.BirthYear = value; }
         }
 
-        private User(Login login, Password password, nickname_t nickname, birthYear_t birthYear)
+        private User(in Login login, in Password password, in nickname_t nickname, in birthYear_t birthYear)
         {
-            DB = new Db(login.db, password.db);
+            db = new Db(login.db, password.db);
             Login = login;
             Nickname = nickname;
             BirthYear = birthYear;
         }
 
-        /// <summary>
-        /// Creates new user
-        /// </summary>
+        /// <summary> Create new user </summary>
+        /// <returns> Registration success </returns>
         public static async Task<bool> Register(Login login, Password password, nickname_t nickname = null,
             birthYear_t birthYear = null)
         {
-            MusicContext context = new MusicContext();
+            MusicContext db = new MusicContext();
 
-            if (context.Users.Any(u => u.Login.Value == login.Value)) // Check if login exists
+            if (db.Users.Any(u => u.Login.Value == login.Value)) // Check if login exists
                 return false; // Registration unsuccessful
 
-            await context.AddAsync(new User(login, password, nickname, birthYear).db);
+            await db.AddAsync(new User(login, password, nickname, birthYear).db);
 
-            await context.SaveChangesAsync();
+            await db.SaveChangesAsync();
 
             return true; // Registration successful
         }
 
-        // Login
+        /// <summary> Log in user and issue authorization token </summary>
+        /// <returns> Authorization token </returns>
+        public static async Task<authToken_t> LogIn(Login login, Password password)
+        {
+            MusicContext db = new MusicContext();
+
+            Db user = db.Users
+                .Include(u => u.Login).Include(u => u.Password).FirstOrDefault(u => u.Login.Value == login.Value);
+
+            if (user == null || password.Hash != user.Password.Hash)
+                return null; // User with specified login doesn't exists or password is incorrect
+
+            // Create authorization token based on login, password and current time
+            user.AuthToken = new Password(user.Login.Value + System.DateTime.Now.ToString() + user.Password.Hash).Hash;
+
+            await db.SaveChangesAsync();
+
+            return user.AuthToken;
+        }
+
         // Logout
     }
 }

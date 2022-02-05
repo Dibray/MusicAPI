@@ -7,7 +7,6 @@
         internal class Db
         {
             private readonly value_t value = null;
-
             /// <exception cref="System.ArgumentException"></exception>
             public value_t Value
             {
@@ -21,6 +20,9 @@
                         throw new System.ArgumentException("Invalid Login");
                 }
             }
+
+            public long UserId { get; private set; }
+            public User.Db User { get; private set; }
 
             private Db() { }
 
@@ -42,21 +44,16 @@
             }
         }
 
-        private Db DB;
-
-        internal Db db
-        { 
-            get { return DB; }
-        }
+        internal Db db { get; }
 
         public value_t Value
         {
-            get { return DB.Value; }
+            get { return db.Value; }
         }
 
         public Login(in value_t login)
         {
-            DB = new Db(login);
+            db = new Db(login);
         }
     }
 }
