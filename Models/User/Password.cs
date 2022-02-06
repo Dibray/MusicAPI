@@ -4,7 +4,7 @@
 
     public class Password
     {
-        internal class Db
+        public class Db
         {
             private long Id { get; set; }
 

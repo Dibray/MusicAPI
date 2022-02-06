@@ -4,7 +4,7 @@
 
     public class Login
     {
-        internal class Db
+        public class Db
         {
             private readonly value_t value = null;
             /// <exception cref="System.ArgumentException"></exception>

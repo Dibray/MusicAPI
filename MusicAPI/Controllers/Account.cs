@@ -9,15 +9,18 @@
     [Route("api/[controller]")]
     public class Account : ControllerBase
     {
-        private static Role Role { get; set; } = Role.Guest;
+        internal static Role Role { get; set; } = Role.Guest;
 
-        private const string AUTH_TOKEN = "AuthToken";
-        private const string USER_ID = "UserId";
+        internal const string AUTH_TOKEN = "AuthToken";
+        internal const string USER_ID = "UserId";
 
         [HttpPost]
         public async Task<JsonResult> Register(string login, string password, string nickname = null,
             int? birthYear = null)
         {
+            if (Role != Role.Guest)
+                return new JsonResult(false);
+
             try
             {
                 Login newLogin = new Login(login);
@@ -34,8 +37,11 @@
         }
 
         [HttpGet]
-        public async Task<bool> LogIn(string login, string password)
+        public async Task<JsonResult> LogIn(string login, string password)
         {
+            if (Role != Role.Guest)
+                return new JsonResult(false);
+
             try
             {
                 Login checkLogin = new Login(login);
@@ -44,18 +50,18 @@
                 string authToken = await Models.User.LogIn(checkLogin, checkPassword);
 
                 if (authToken == null)
-                    return false; // Incorrect login or password
+                    return new JsonResult(false); // Incorrect login or password
 
                 Response.Cookies.Delete(AUTH_TOKEN);
                 Response.Cookies.Append(AUTH_TOKEN, authToken);
                 Response.Cookies.Delete(USER_ID);
                 Response.Cookies.Append(USER_ID, login);
 
-                return true;
+                return new JsonResult(true);
             }
             catch (System.ArgumentException)
             {
-                return false;
+                return new JsonResult(false);
             }
         }
     }

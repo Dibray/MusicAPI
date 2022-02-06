@@ -12,9 +12,9 @@
 
     public class User
     {
-        internal class Db
+        public class Db
         {
-            /* This class describes only database objects and must be handled only from outer class */
+            /* This class describes only database objects */
 
             private long Id { get; set; } // User Id
 
@@ -84,7 +84,7 @@
         {
             MusicContext db = new MusicContext();
 
-            if (db.Users.Any(u => u.Login.Value == login.Value)) // Check if login exists
+            if (await db.Users.AnyAsync(u => u.Login.Value == login.Value)) // Check if login exists
                 return false; // Registration unsuccessful
 
             await db.AddAsync(new User(login, password, nickname, birthYear).db);
@@ -100,8 +100,8 @@
         {
             MusicContext db = new MusicContext();
 
-            Db user = db.Users
-                .Include(u => u.Login).Include(u => u.Password).FirstOrDefault(u => u.Login.Value == login.Value);
+            Db user = await db.Users
+                .Include(u => u.Login).Include(u => u.Password).FirstOrDefaultAsync(u => u.Login.Value == login.Value);
 
             if (user == null || password.Hash != user.Password.Hash)
                 return null; // User with specified login doesn't exists or password is incorrect

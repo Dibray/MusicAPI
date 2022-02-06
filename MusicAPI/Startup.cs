@@ -46,6 +46,8 @@ namespace Music.API
 
             app.UseRouting();
 
+            app.UseMiddleware<Authorization>();
+
             app.UseEndpoints(endpoints => endpoints.MapControllers());
         }
     }

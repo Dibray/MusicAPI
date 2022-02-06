@@ -7,9 +7,9 @@
     public class MusicContext : DbContext
     {
         // User
-        internal DbSet<Login.Db> Logins { get; set; }
-        internal DbSet<Password.Db> Passwords { get; set; }
-        internal DbSet<User.Db> Users { get; set; }
+        public DbSet<Login.Db> Logins { get; set; }
+        public DbSet<Password.Db> Passwords { get; set; }
+        public DbSet<User.Db> Users { get; set; }
         // User end
         
         public MusicContext() { }
