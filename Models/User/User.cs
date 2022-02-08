@@ -3,7 +3,6 @@
     using Music.Database;
 
     using System.Threading.Tasks;
-    using System.Linq;
     using Microsoft.EntityFrameworkCore;
 
     using nickname_t = System.String;
@@ -113,7 +112,5 @@
 
             return user.AuthToken;
         }
-
-        // Logout
     }
 }

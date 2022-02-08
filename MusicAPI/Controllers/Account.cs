@@ -15,6 +15,7 @@
         internal const string USER_ID = "UserId";
 
         [HttpPost]
+        [Route("register")]
         public async Task<JsonResult> Register(string login, string password, string nickname = null,
             int? birthYear = null)
         {
@@ -37,6 +38,7 @@
         }
 
         [HttpGet]
+        [Route("login")]
         public async Task<JsonResult> LogIn(string login, string password)
         {
             if (Role != Role.Guest)
@@ -63,6 +65,19 @@
             {
                 return new JsonResult(false);
             }
+        }
+
+        [HttpGet]
+        [Route("logout")]
+        public JsonResult LogOut()
+        {
+            if (Role == Role.Guest)
+                return new JsonResult(false);
+
+            Response.Cookies.Delete(AUTH_TOKEN);
+            Response.Cookies.Delete(USER_ID);
+
+            return new JsonResult(true);
         }
     }
 }
