@@ -11,6 +11,9 @@
         public DbSet<Password.Db> Passwords { get; set; }
         public DbSet<User.Db> Users { get; set; }
         // User end
+
+        internal DbSet<FullName.Db> FullNames { get; set; }
+        internal DbSet<Author.Db> Authors { get; set; }
         
         public MusicContext() { }
 
@@ -33,6 +36,10 @@
 
             model.Entity<User.Db>().HasKey("Id");
             // User end
+
+            model.Entity<FullName.Db>().HasKey("Id");
+
+            model.Entity<Author.Db>().HasKey("Id");
         }
     }
 }
